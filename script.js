@@ -113,7 +113,7 @@ function resetearValores() {
 }
 
 document.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
+    if (event.key ==="Enter") {
         calcular();
     }
 });
