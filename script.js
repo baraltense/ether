@@ -105,12 +105,10 @@ function calcular() {
 }
 
 function resetearValores() {
-    actualizarInputs();
-    document.getElementById('cantidad').value = 10000;
-    document.getElementById('multiplicador').value = 250;
-    document.getElementById('impuesto').value = 1;
-    calcular();
+    // Recargar la página para restablecer todos los valores
+    location.reload();
 }
+
 
 document.addEventListener("keypress", function(event) {
     if (event.key ==="Enter") {
