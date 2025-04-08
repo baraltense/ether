@@ -3,89 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Bracelets | OSRS Tools</title>
+    <title>Calculadora de Bracelets OSRS</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body onload="obtenerPrecios()">
-    <div class="header">
+    <header class="header">
+        <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
         <h1>Calculadora de Bracelets</h1>
-        <p>Optimiza tus ganancias en Old School RuneScape con esta herramienta profesional</p>
-    </div>
+        <p>Calcula tus ganancias con datos en tiempo real</p>
+    </header>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <span><i class="fas fa-calculator icon"></i> Parámetros</span>
-                <span class="status-indicator"></span>
+    <main class="main-container">
+        <section class="calculator-panel">
+            <h2 class="section-title">Parámetros de Cálculo</h2>
+            
+            <div class="input-group">
+                <label for="precioBracelet">Precio Bracelet:</label>
+                <input type="number" id="precioBracelet" value="0" oninput="calcular()">
             </div>
-            <div class="card-body">
-                <div class="input-group">
-                    <label for="precioBracelet">Precio Inicial Bracelet</label>
-                    <input type="number" id="precioBracelet" value="0" oninput="calcular()">
-                </div>
-                
-                <div class="input-group">
-                    <label for="cantidad">Cantidad</label>
-                    <input type="number" id="cantidad" value="10000" oninput="calcular()">
-                </div>
-                
-                <div class="input-group">
-                    <label for="invCompra">Inversión</label>
-                    <div class="result-container">
-                        <span id="invCompra" class="result-value">0</span>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label for="precioEther">Precio Ether</label>
-                    <input type="number" id="precioEther" value="0" oninput="calcular()">
-                </div>
-                
-                <div class="input-group">
-                    <label for="multiplicador">Multiplicador</label>
-                    <input type="number" id="multiplicador" value="250" min="1" oninput="calcular()">
-                </div>
-                
-                <div class="input-group">
-                    <label for="impuesto">Impuesto (%)</label>
-                    <input type="number" id="impuesto" value="1" step="0.01" min="0" oninput="calcular()">
-                </div>
-                
-                <div class="input-group">
-                    <label for="gananciaTotal">Ganancia Total</label>
-                    <div class="result-container">
-                        <span id="gananciaTotal" class="result-value">0</span>
-                    </div>
-                </div>
-                
-                <div class="button-container">
-                    <button class="button" onclick="resetearValores()">
-                        <i class="fas fa-sync-alt" style="margin-right: 8px;"></i> Resetear Valores
-                    </button>
-                </div>
+            
+            <div class="input-group">
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" id="cantidad" value="10000" oninput="calcular()">
             </div>
-        </div>
+            
+            <div class="input-group">
+                <label for="invCompra">Inversión:</label>
+                <div id="invCompra" class="result-display">0</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="precioEther">Precio Ether:</label>
+                <input type="number" id="precioEther" value="0" oninput="calcular()">
+            </div>
+            
+            <div class="input-group">
+                <label for="multiplicador">Multiplicador:</label>
+                <input type="number" id="multiplicador" value="250" min="1" oninput="calcular()">
+            </div>
+            
+            <div class="input-group">
+                <label for="impuesto">Impuesto (%):</label>
+                <input type="number" id="impuesto" value="1" step="0.01" min="0" oninput="calcular()">
+            </div>
+            
+            <div class="input-group">
+                <label for="gananciaTotal">Ganancia:</label>
+                <div id="gananciaTotal" class="result-display">0</div>
+            </div>
+            
+            <button class="btn" onclick="resetearValores()">Resetear</button>
+        </section>
 
-        <div class="card">
-            <div class="card-header">
-                <span><i class="fas fa-list-ul icon"></i> Precios de Items</span>
-                <span class="item-count-badge">8 items</span>
-            </div>
-            <div class="card-body">
-                <div class="items-container" id="itemsList">
-                    <!-- Los items se cargarán dinámicamente aquí -->
-                </div>
-                <div class="divider"></div>
-                <div class="button-container">
-                    <button class="button" onclick="obtenerPrecios()">
-                        <i class="fas fa-sync-alt" style="margin-right: 8px;"></i> Actualizar Precios
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+        <section class="items-section">
+            <h2 class="section-title">Precios de Mercado</h2>
+            <ul class="items-list" id="itemsList"></ul>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Datos en tiempo real de la API de RuneScape</p>
+    </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const themeBtn = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('dark-mode')) {
+                themeBtn.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeBtn.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Cargar tema guardado
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle').textContent = '🌙';
+        }
+    </script>
 </body>
 </html>
