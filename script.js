@@ -46,19 +46,24 @@ async function obtenerPrecios() {
 
 function llenarListaItems() {
     const list = document.getElementById('itemsList');
+    list.innerHTML = '';
+    
     items.forEach(item => {
         const id = item.id;
         const nombre = precios[id]?.nombre;
         const icono = precios[id]?.icono ? `https://oldschool.runescape.wiki/images/${formatearNombreItem(nombre)}_detail.png` : 'https://oldschool.runescape.wiki/images/default_icon.png';
 
         const listItem = document.createElement('li');
+        listItem.className = 'item-card';
         listItem.innerHTML = `
-            <img src="${icono}" alt="${nombre}">
-            <span class="item-name">${nombre}</span>
-            <span class="item-price">
-                <span>Bajo: ${precios[id]?.bajo.toLocaleString('es-ES') || 'N/A'}</span> (${formatTime(precios[id]?.lowtime)}) | 
-                <span>Alto: ${precios[id]?.alto.toLocaleString('es-ES') || 'N/A'}</span> (${formatTime(precios[id]?.hightime)})
-            </span>
+            <img src="${icono}" alt="${nombre}" class="item-icon" onerror="this.src='https://oldschool.runescape.wiki/images/default_icon.png'">
+            <div class="item-info">
+                <div class="item-name">${nombre}</div>
+                <div class="item-price">
+                    <span>Bajo: <span class="price-value">${precios[id]?.bajo.toLocaleString('es-ES') || 'N/A'}</span></span>
+                    <span>Alto: <span class="price-value">${precios[id]?.alto.toLocaleString('es-ES') || 'N/A'}</span></span>
+                </div>
+            </div>
         `;
         list.appendChild(listItem);
     });
@@ -105,13 +110,11 @@ function calcular() {
 }
 
 function resetearValores() {
-    // Recargar la página para restablecer todos los valores
     location.reload();
 }
 
-
 document.addEventListener("keypress", function(event) {
-    if (event.key ==="Enter") {
+    if (event.key === "Enter") {
         calcular();
     }
 });
