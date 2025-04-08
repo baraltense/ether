@@ -3,71 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Bracelets OSRS</title>
+    <title>Calculadora OSRS</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body onload="obtenerPrecios()">
     <header class="header">
         <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
-        <h1>Calculadora de Bracelets</h1>
-        <p>Calcula tus ganancias con datos en tiempo real</p>
+        <h1>Calculadora Bracelets</h1>
+        <p>Calcula tus ganancias al instante</p>
     </header>
 
-    <main class="main-container">
-        <section class="calculator-panel">
-            <h2 class="section-title">Parámetros de Cálculo</h2>
+    <div class="compact-grid">
+        <section class="compact-panel">
+            <h2 class="section-title">Calculadora</h2>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="precioBracelet">Precio Bracelet:</label>
                 <input type="number" id="precioBracelet" value="0" oninput="calcular()">
             </div>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="cantidad">Cantidad:</label>
                 <input type="number" id="cantidad" value="10000" oninput="calcular()">
             </div>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="invCompra">Inversión:</label>
-                <div id="invCompra" class="result-display">0</div>
+                <div id="invCompra" class="compact-result">0</div>
             </div>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="precioEther">Precio Ether:</label>
                 <input type="number" id="precioEther" value="0" oninput="calcular()">
             </div>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="multiplicador">Multiplicador:</label>
                 <input type="number" id="multiplicador" value="250" min="1" oninput="calcular()">
             </div>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="impuesto">Impuesto (%):</label>
                 <input type="number" id="impuesto" value="1" step="0.01" min="0" oninput="calcular()">
             </div>
             
-            <div class="input-group">
+            <div class="compact-input-group">
                 <label for="gananciaTotal">Ganancia:</label>
-                <div id="gananciaTotal" class="result-display">0</div>
+                <div id="gananciaTotal" class="compact-result">0</div>
             </div>
             
-            <button class="btn" onclick="resetearValores()">Resetear</button>
+            <button class="compact-btn" onclick="resetearValores()">Resetear</button>
         </section>
 
-        <section class="items-section">
-            <h2 class="section-title">Precios de Mercado</h2>
-            <ul class="items-list" id="itemsList"></ul>
+        <section class="compact-panel">
+            <h2 class="section-title">Precios Actuales</h2>
+            <ul class="compact-list" id="itemsList"></ul>
         </section>
-    </main>
+    </div>
 
     <footer class="footer">
-        <p>Datos en tiempo real de la API de RuneScape</p>
+        <p>Datos en tiempo real de OSRS API</p>
     </footer>
 
     <script src="script.js"></script>
     <script>
-        // Función para cambiar el tema
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const themeBtn = document.querySelector('.theme-toggle');
@@ -80,7 +79,6 @@
             }
         }
 
-        // Cargar tema guardado
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
             document.querySelector('.theme-toggle').textContent = '🌙';
