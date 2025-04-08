@@ -13,11 +13,15 @@ let precios = {};
 
 async function obtenerPrecios() {
     try {
-        const preciosResponse = await fetch('https://prices.runescape.wiki/api/v1/osrs/latest');
-        const preciosData = await preciosResponse.json();
+        const [preciosResponse, mappingResponse] = await Promise.all([
+            fetch('https://prices.runescape.wiki/api/v1/osrs/latest'),
+            fetch('https://prices.runescape.wiki/api/v1/osrs/mapping')
+        ]);
 
-        const mappingResponse = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping');
-        const mappingData = await mappingResponse.json();
+        const [preciosData, mappingData] = await Promise.all([
+            preciosResponse.json(),
+            mappingResponse.json()
+        ]);
 
         items.forEach(item => {
             const id = item.id;
@@ -30,8 +34,8 @@ async function obtenerPrecios() {
                     icono: mappingItem.icon || 'default_icon.png',
                     bajo: precio.low || 0,
                     alto: precio.high || 0,
-                    lowtime: precio.lowTime || '',
-                    hightime: precio.highTime || '',
+                    lowTime: precio.lowTime || '',
+                    highTime: precio.highTime || '',
                 };
             }
         });
@@ -41,6 +45,8 @@ async function obtenerPrecios() {
         calcular();
     } catch (error) {
         console.error('Error al obtener los precios:', error);
+        document.getElementById('itemsList').innerHTML = 
+            '<li style="text-align: center; color: var(--primary-color);">Error cargando datos</li>';
     }
 }
 
@@ -50,18 +56,23 @@ function llenarListaItems() {
     
     items.forEach(item => {
         const id = item.id;
-        const nombre = precios[id]?.nombre;
-        const icono = precios[id]?.icono ? `https://oldschool.runescape.wiki/images/${formatearNombreItem(nombre)}_detail.png` : 'https://oldschool.runescape.wiki/images/default_icon.png';
+        const precioItem = precios[id];
+        const nombre = precioItem?.nombre || 'Desconocido';
+        const icono = precioItem?.icono ? 
+            `https://oldschool.runescape.wiki/images/${formatearNombreItem(nombre)}_detail.png` : 
+            'https://oldschool.runescape.wiki/images/default_icon.png';
 
         const listItem = document.createElement('li');
-        listItem.className = 'item-card';
+        listItem.className = 'compact-item';
         listItem.innerHTML = `
-            <img src="${icono}" alt="${nombre}" class="item-icon" onerror="this.src='https://oldschool.runescape.wiki/images/default_icon.png'">
-            <div class="item-info">
-                <div class="item-name">${nombre}</div>
-                <div class="item-price">
-                    <span>Bajo: <span class="price-value">${precios[id]?.bajo.toLocaleString('es-ES') || 'N/A'}</span></span>
-                    <span>Alto: <span class="price-value">${precios[id]?.alto.toLocaleString('es-ES') || 'N/A'}</span></span>
+            <img src="${icono}" alt="${nombre}" class="compact-icon" onerror="this.src='https://oldschool.runescape.wiki/images/default_icon.png'">
+            <div class="compact-item-info">
+                <div class="compact-item-name">${nombre}</div>
+                <div class="compact-item-price">
+                    <span>B: <span class="compact-price-value">${precioItem?.bajo?.toLocaleString('es-ES') || 'N/A'}</span>
+                    <small>${precioItem?.lowTime ? formatTime(precioItem.lowTime) : ''}</small></span>
+                    <span>A: <span class="compact-price-value">${precioItem?.alto?.toLocaleString('es-ES') || 'N/A'}</span>
+                    <small>${precioItem?.highTime ? formatTime(precioItem.highTime) : ''}</small></span>
                 </div>
             </div>
         `;
@@ -70,14 +81,9 @@ function llenarListaItems() {
 }
 
 function formatTime(timestamp) {
-    if (!timestamp) return 'N/A';
+    if (!timestamp) return '';
     const date = new Date(timestamp * 1000);
-    let hours = date.getHours();
-    let minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    return `${hours}:${minutes} ${ampm}`;
+    return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 }
 
 function formatearNombreItem(nombre) {
@@ -105,8 +111,20 @@ function calcular() {
     let gananciaPorUnidad = ((precioEther * multiplicador) * (1 - impuesto)) - precioBracelet;
     let gananciaTotal = gananciaPorUnidad * cantidad;
 
-    document.getElementById('invCompra').innerText = inversionCompra.toLocaleString('es-ES');
-    document.getElementById('gananciaTotal').innerText = gananciaTotal.toLocaleString('es-ES');
+    // Actualizar resultados
+    const invCompraElement = document.getElementById('invCompra');
+    const gananciaTotalElement = document.getElementById('gananciaTotal');
+    
+    invCompraElement.innerText = inversionCompra.toLocaleString('es-ES');
+    gananciaTotalElement.innerText = gananciaTotal.toLocaleString('es-ES');
+    
+    // Aplicar clases según sea positivo o negativo
+    gananciaTotalElement.className = 'compact-result';
+    if (gananciaTotal >= 0) {
+        gananciaTotalElement.classList.add('positive');
+    } else {
+        gananciaTotalElement.classList.add('negative');
+    }
 }
 
 function resetearValores() {
