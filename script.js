@@ -42,7 +42,7 @@ async function obtenerPrecios() {
 
         llenarListaItems();
         actualizarInputs();
-        calcular(); // Llamamos a calcular después de cargar los precios
+        calcular();
     } catch (error) {
         console.error('Error al obtener los precios:', error);
         document.getElementById('itemsList').innerHTML = 
@@ -101,30 +101,31 @@ function actualizarInputs() {
 }
 
 function calcular() {
-    // Obtenemos valores de los inputs, con valores por defecto si están vacíos
     let precioBracelet = parseFloat(document.getElementById('precioBracelet').value) || 0;
-    let cantidad = parseFloat(document.getElementById('cantidad').value) || 10000;
+    let cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
     let precioEther = parseFloat(document.getElementById('precioEther').value) || 0;
-    let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 250;
-    let impuestoPorcentaje = (parseFloat(document.getElementById('impuesto').value) || 2) / 100;
+    let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 1;
+    let porcentajeImpuesto = parseFloat(document.getElementById('impuesto').value) || 0;
 
-    // Calculamos el precio de venta con el multiplicador
-    let precioVenta = precioEther * multiplicador;
+    // Calcular precio de venta por ether
+    let precioVentaPorEther = precioEther * multiplicador;
     
-    // Calculamos el impuesto (redondeado hacia abajo como en el GE)
-    let impuesto = Math.floor(precioVenta * impuestoPorcentaje);
+    // Calcular impuesto (2% redondeado hacia abajo)
+    let impuesto = Math.floor(precioVentaPorEther * (porcentajeImpuesto / 100));
     
-    // Calculamos la ganancia
+    // Calcular ganancias
     let inversionCompra = precioBracelet * cantidad;
-    let gananciaPorUnidad = (precioVenta - impuesto) - precioBracelet;
+    let gananciaPorUnidad = (precioVentaPorEther - impuesto) - precioBracelet;
     let gananciaTotal = gananciaPorUnidad * cantidad;
 
-    // Actualizamos los resultados en pantalla
-    document.getElementById('invCompra').innerText = inversionCompra.toLocaleString('es-ES');
-    document.getElementById('gananciaTotal').innerText = gananciaTotal.toLocaleString('es-ES');
-    
-    // Aplicamos estilos según si la ganancia es positiva o negativa
+    // Actualizar resultados
+    const invCompraElement = document.getElementById('invCompra');
     const gananciaTotalElement = document.getElementById('gananciaTotal');
+    
+    invCompraElement.innerText = inversionCompra.toLocaleString('es-ES');
+    gananciaTotalElement.innerText = gananciaTotal.toLocaleString('es-ES');
+    
+    // Aplicar clases según sea positivo o negativo
     gananciaTotalElement.className = 'compact-result';
     if (gananciaTotal >= 0) {
         gananciaTotalElement.classList.add('positive');
