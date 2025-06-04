@@ -1,12 +1,12 @@
 const items = [
-    { id: '21817' },
-    { id: '21820' },
-    { id: '24777' },
-    { id: '13190' },
-    { id: '20997' },
-    { id: '22486' },
-    { id: '27277' },
-    { id: '4714' },
+    { id: '21817' }, // Bracelet of ethereum (uncharged)
+    { id: '21820' }, // Bracelet of ethereum
+    { id: '24777' }, // Ether
+    { id: '13190' }, // Ring of wealth
+    { id: '20997' }, // Amulet of glory
+    { id: '22486' }, // Amulet of fury
+    { id: '27277' }, // Zaryte vambraces
+    { id: '4714' },  // Berserker necklace
 ];
 
 let precios = {};
@@ -42,7 +42,7 @@ async function obtenerPrecios() {
 
         llenarListaItems();
         actualizarInputs();
-        calcular();
+        calcular(); // Calcular automáticamente al cargar precios
     } catch (error) {
         console.error('Error al obtener los precios:', error);
         document.getElementById('itemsList').innerHTML = 
@@ -94,54 +94,47 @@ function formatearNombreItem(nombre) {
 }
 
 function actualizarInputs() {
-    const precioBajoEther = precios['21817']?.bajo || 0;
-    const precioAltoEther = precios['21820']?.alto || 0;
+    const precioBajoEther = precios['21817']?.bajo || 0; // Uncharged bracelet
+    const precioAltoEther = precios['21820']?.alto || 0; // Charged bracelet
     document.getElementById('precioBracelet').value = precioBajoEther;
     document.getElementById('precioEther').value = precioAltoEther;
 }
 
 function calcular() {
-    let precioBracelet = parseFloat(document.getElementById('precioBracelet').value) || 0;
-    let cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
-    let precioEther = parseFloat(document.getElementById('precioEther').value) || 0;
-    let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 1;
-    let impuestoPorcentaje = parseFloat(document.getElementById('impuesto').value) || 2; // 2% por defecto
+    // Obtener valores de los inputs
+    const precioBracelet = parseFloat(document.getElementById('precioBracelet').value) || 0;
+    const cantidad = parseFloat(document.getElementById('cantidad').value) || 10000;
+    const precioEther = parseFloat(document.getElementById('precioEther').value) || 0;
+    const multiplicador = parseFloat(document.getElementById('multiplicador').value) || 250;
+    const impuestoPorcentaje = parseFloat(document.getElementById('impuesto').value) || 2;
 
-    // Calcular el impuesto por ether (redondeando hacia abajo al número entero más cercano)
-    let impuestoPorEther = Math.floor(precioEther * impuestoPorcentaje / 100);
-    
-    // Precio neto por ether después de impuestos
-    let precioNetoEther = precioEther - impuestoPorEther;
-    
-    // Ganancia por unidad: (precio neto de los éteres * multiplicador) - precio del bracelet
-    let gananciaPorUnidad = (precioNetoEther * multiplicador) - precioBracelet;
-    
-    // Ganancia total
-    let gananciaTotal = gananciaPorUnidad * cantidad;
-    
-    // Inversión total
-    let inversionCompra = precioBracelet * cantidad;
+    // Cálculos precisos según mecánicas de OSRS
+    const impuestoPorEther = Math.floor(precioEther * impuestoPorcentaje / 100);
+    const precioNetoEther = precioEther - impuestoPorEther;
+    const gananciaPorUnidad = (precioNetoEther * multiplicador) - precioBracelet;
+    const gananciaTotal = gananciaPorUnidad * cantidad;
+    const inversionCompra = precioBracelet * cantidad;
 
-    // Actualizar resultados
-    const invCompraElement = document.getElementById('invCompra');
-    const gananciaTotalElement = document.getElementById('gananciaTotal');
+    // Actualizar la interfaz
+    document.getElementById('invCompra').innerText = inversionCompra.toLocaleString('es-ES');
+    const gananciaElement = document.getElementById('gananciaTotal');
+    gananciaElement.innerText = Math.round(gananciaTotal).toLocaleString('es-ES');
     
-    invCompraElement.innerText = inversionCompra.toLocaleString('es-ES');
-    gananciaTotalElement.innerText = gananciaTotal.toLocaleString('es-ES');
-    
-    // Aplicar clases según sea positivo o negativo
-    gananciaTotalElement.className = 'compact-result';
-    if (gananciaTotal >= 0) {
-        gananciaTotalElement.classList.add('positive');
-    } else {
-        gananciaTotalElement.classList.add('negative');
-    }
+    // Estilo según ganancia positiva/negativa
+    gananciaElement.className = gananciaTotal >= 0 ? 'compact-result positive' : 'compact-result negative';
 }
 
 function resetearValores() {
-    location.reload();
+    document.getElementById('precioBracelet').value = precios['21817']?.bajo || 0;
+    document.getElementById('cantidad').value = 10000;
+    document.getElementById('precioEther').value = precios['21820']?.alto || 0;
+    document.getElementById('multiplicador').value = 250;
+    document.getElementById('impuesto').value = 2;
+    calcular();
 }
 
+// Event listeners
+document.addEventListener("DOMContentLoaded", obtenerPrecios);
 document.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         calcular();
