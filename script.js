@@ -105,18 +105,22 @@ function calcular() {
     let cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
     let precioEther = parseFloat(document.getElementById('precioEther').value) || 0;
     let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 1;
-    let porcentajeImpuesto = parseFloat(document.getElementById('impuesto').value) || 0;
+    let impuestoPorcentaje = parseFloat(document.getElementById('impuesto').value) || 2; // 2% por defecto
 
-    // Calcular precio de venta por ether
-    let precioVentaPorEther = precioEther * multiplicador;
+    // Calcular el impuesto por ether (redondeando hacia abajo al número entero más cercano)
+    let impuestoPorEther = Math.floor(precioEther * impuestoPorcentaje / 100);
     
-    // Calcular impuesto (2% redondeado hacia abajo)
-    let impuesto = Math.floor(precioVentaPorEther * (porcentajeImpuesto / 100));
+    // Precio neto por ether después de impuestos
+    let precioNetoEther = precioEther - impuestoPorEther;
     
-    // Calcular ganancias
-    let inversionCompra = precioBracelet * cantidad;
-    let gananciaPorUnidad = (precioVentaPorEther - impuesto) - precioBracelet;
+    // Ganancia por unidad: (precio neto de los éteres * multiplicador) - precio del bracelet
+    let gananciaPorUnidad = (precioNetoEther * multiplicador) - precioBracelet;
+    
+    // Ganancia total
     let gananciaTotal = gananciaPorUnidad * cantidad;
+    
+    // Inversión total
+    let inversionCompra = precioBracelet * cantidad;
 
     // Actualizar resultados
     const invCompraElement = document.getElementById('invCompra');
