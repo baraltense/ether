@@ -105,26 +105,28 @@ function calcular() {
     let cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
     let precioEther = parseFloat(document.getElementById('precioEther').value) || 0;
     let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 1;
-    let impuesto = parseFloat(document.getElementById('impuesto').value) / 100 || 0;
+    let impuestoPorcentaje = parseFloat(document.getElementById('impuesto').value) / 100 || 0;
+
+    // Calcular el impuesto (redondeado hacia abajo como en el GE)
+    let precioVentaPorEther = precioEther * multiplicador;
+    let impuesto = Math.floor(precioVentaPorEther * impuestoPorcentaje);
+    let recibirPorEther = precioVentaPorEther - impuesto;
 
     let inversionCompra = precioBracelet * cantidad;
-    let gananciaPorUnidad = ((precioEther * multiplicador) * (1 - impuesto)) - precioBracelet;
+    let gananciaPorUnidad = recibirPorEther - precioBracelet;
     let gananciaTotal = gananciaPorUnidad * cantidad;
 
     // Actualizar resultados
-    const invCompraElement = document.getElementById('invCompra');
+    document.getElementById('invCompra').innerText = inversionCompra.toLocaleString('es-ES');
+    document.getElementById('gananciaTotal').innerText = gananciaTotal.toLocaleString('es-ES');
+    document.getElementById('recibirPorEther').innerText = recibirPorEther.toLocaleString('es-ES');
+
+    // Aplicar estilos a resultados
     const gananciaTotalElement = document.getElementById('gananciaTotal');
-    
-    invCompraElement.innerText = inversionCompra.toLocaleString('es-ES');
-    gananciaTotalElement.innerText = gananciaTotal.toLocaleString('es-ES');
-    
-    // Aplicar clases según sea positivo o negativo
     gananciaTotalElement.className = 'compact-result';
-    if (gananciaTotal >= 0) {
-        gananciaTotalElement.classList.add('positive');
-    } else {
-        gananciaTotalElement.classList.add('negative');
-    }
+    gananciaTotal >= 0 
+        ? gananciaTotalElement.classList.add('positive')
+        : gananciaTotalElement.classList.add('negative');
 }
 
 function resetearValores() {
