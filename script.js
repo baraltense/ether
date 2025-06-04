@@ -42,7 +42,7 @@ async function obtenerPrecios() {
 
         llenarListaItems();
         actualizarInputs();
-        calcular();
+        calcular(); // Llamamos a calcular después de cargar los precios
     } catch (error) {
         console.error('Error al obtener los precios:', error);
         document.getElementById('itemsList').innerHTML = 
@@ -101,32 +101,36 @@ function actualizarInputs() {
 }
 
 function calcular() {
+    // Obtenemos valores de los inputs, con valores por defecto si están vacíos
     let precioBracelet = parseFloat(document.getElementById('precioBracelet').value) || 0;
-    let cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
+    let cantidad = parseFloat(document.getElementById('cantidad').value) || 10000;
     let precioEther = parseFloat(document.getElementById('precioEther').value) || 0;
-    let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 1;
-    let impuestoPorcentaje = parseFloat(document.getElementById('impuesto').value) / 100 || 0;
+    let multiplicador = parseFloat(document.getElementById('multiplicador').value) || 250;
+    let impuestoPorcentaje = (parseFloat(document.getElementById('impuesto').value) || 2) / 100;
 
-    // Calcular el impuesto (redondeado hacia abajo como en el GE)
-    let precioVentaPorEther = precioEther * multiplicador;
-    let impuesto = Math.floor(precioVentaPorEther * impuestoPorcentaje);
-    let recibirPorEther = precioVentaPorEther - impuesto;
-
+    // Calculamos el precio de venta con el multiplicador
+    let precioVenta = precioEther * multiplicador;
+    
+    // Calculamos el impuesto (redondeado hacia abajo como en el GE)
+    let impuesto = Math.floor(precioVenta * impuestoPorcentaje);
+    
+    // Calculamos la ganancia
     let inversionCompra = precioBracelet * cantidad;
-    let gananciaPorUnidad = recibirPorEther - precioBracelet;
+    let gananciaPorUnidad = (precioVenta - impuesto) - precioBracelet;
     let gananciaTotal = gananciaPorUnidad * cantidad;
 
-    // Actualizar resultados
+    // Actualizamos los resultados en pantalla
     document.getElementById('invCompra').innerText = inversionCompra.toLocaleString('es-ES');
     document.getElementById('gananciaTotal').innerText = gananciaTotal.toLocaleString('es-ES');
-    document.getElementById('recibirPorEther').innerText = recibirPorEther.toLocaleString('es-ES');
-
-    // Aplicar estilos a resultados
+    
+    // Aplicamos estilos según si la ganancia es positiva o negativa
     const gananciaTotalElement = document.getElementById('gananciaTotal');
     gananciaTotalElement.className = 'compact-result';
-    gananciaTotal >= 0 
-        ? gananciaTotalElement.classList.add('positive')
-        : gananciaTotalElement.classList.add('negative');
+    if (gananciaTotal >= 0) {
+        gananciaTotalElement.classList.add('positive');
+    } else {
+        gananciaTotalElement.classList.add('negative');
+    }
 }
 
 function resetearValores() {
